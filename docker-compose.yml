@@ -13,38 +13,18 @@ x-defaults: &defaults
   build:
     context: .
   depends_on:
-    - redis
-    - postgres
     - memcached
-    - smtp
   env_file: .env
   environment:
     SENTRY_MEMCACHED_HOST: memcached
-    SENTRY_REDIS_HOST: redis
-    SENTRY_POSTGRES_HOST: postgres
-    SENTRY_EMAIL_HOST: smtp
   volumes:
     - sentry-data:/var/lib/sentry/files
 
 
 services:
-  smtp:
-    restart: unless-stopped
-    image: tianon/exim4
-
   memcached:
     restart: unless-stopped
     image: memcached:1.5-alpine
-
-  redis:
-    restart: unless-stopped
-    image: redis:3.2-alpine
-
-  postgres:
-    restart: unless-stopped
-    image: postgres:9.5
-    volumes:
-      - sentry-postgres:/var/lib/postgresql/data
 
   web:
     <<: *defaults
@@ -62,6 +42,4 @@ services:
 
 volumes:
     sentry-data:
-      external: true
-    sentry-postgres:
       external: true
