@@ -9,10 +9,7 @@ x-sentry-defaults: &sentry_defaults
       - SENTRY_IMAGE
   image: sentry-onpremise-local
   depends_on:
-    - redis
-    - postgres
     - memcached
-    - smtp
     - snuba-api
     - snuba-consumer
     - snuba-outcomes-consumer
@@ -28,7 +25,6 @@ x-sentry-defaults: &sentry_defaults
 x-snuba-defaults: &snuba_defaults
   << : *restart_policy
   depends_on:
-    - redis
     - clickhouse
     - kafka
   image: 'getsentry/snuba:latest'
@@ -36,31 +32,13 @@ x-snuba-defaults: &snuba_defaults
     SNUBA_SETTINGS: docker
     CLICKHOUSE_HOST: clickhouse
     DEFAULT_BROKERS: 'kafka:9092'
-    REDIS_HOST: redis
+#    REDIS_HOST: redis
     UWSGI_MAX_REQUESTS: '10000'
     UWSGI_DISABLE_LOGGING: 'true'
 services:
-  smtp:
-    << : *restart_policy
-    image: tianon/exim4
-    volumes:
-      - 'sentry-smtp:/var/spool/exim4'
-      - 'sentry-smtp-log:/var/log/exim4'
   memcached:
     << : *restart_policy
     image: 'memcached:1.5-alpine'
-  redis:
-    << : *restart_policy
-    image: 'redis:5.0-alpine'
-    volumes:
-      - 'sentry-redis:/data'
-  postgres:
-    << : *restart_policy
-    image: 'postgres:9.6'
-    environment:
-      POSTGRES_HOST_AUTH_METHOD: 'trust'
-    volumes:
-      - 'sentry-postgres:/var/lib/postgresql/data'
   zookeeper:
     << : *restart_policy
     image: 'confluentinc/cp-zookeeper:5.5.0'
@@ -185,13 +163,8 @@ services:
         target: /work/.relay
     depends_on:
       - kafka
-      - redis
 volumes:
   sentry-data:
-    external: true
-  sentry-postgres:
-    external: true
-  sentry-redis:
     external: true
   sentry-zookeeper:
     external: true
@@ -202,7 +175,6 @@ volumes:
   sentry-symbolicator:
     external: true
   sentry-secrets:
-  sentry-smtp:
   sentry-zookeeper-log:
   sentry-kafka-log:
   sentry-smtp-log:

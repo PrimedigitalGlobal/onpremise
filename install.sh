@@ -10,7 +10,7 @@ exec &> >(tee -a "$log_file")
 
 MIN_DOCKER_VERSION='17.05.0'
 MIN_COMPOSE_VERSION='1.23.0'
-MIN_RAM=2400 # MB
+MIN_RAM=1536 # MB
 
 SENTRY_CONFIG_PY='sentry/sentry.conf.py'
 SENTRY_CONFIG_YML='sentry/config.yml'
